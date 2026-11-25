@@ -1,0 +1,395 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--nf-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--nf-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-manrope: var(--nf-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-dm: var(--nf-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-inter: var(--nf-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Chatlyn palette (from Figma) */
+  --color-cream: #f8f5ee;
+  --color-ink: #031814;
+  --color-forest: #004930;
+  --color-pine: #0a3828;
+  --color-brand: #0d4f3c;
+  --color-gold: #ffc71e;
+  --color-mustard: #d8a234;
+  --color-body: #686868;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #f8f5ee;
+  --foreground: #031814;
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* DM Sans is used at optical size 14 throughout the design */
+.font-dm,
+body {
+  font-variation-settings: "opsz" 14;
+}
+
+/* Lenis smooth scrolling */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbit-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+@keyframes shimmer {
+  to {
+    transform: translateX(200%);
+  }
+}
+
+.animate-orbit {
+  animation: orbit var(--orbit-duration, 60s) linear infinite;
+}
+.animate-orbit-reverse {
+  animation: orbit-reverse var(--orbit-duration, 60s) linear infinite;
+}
+.animate-float {
+  animation: float-y 6s ease-in-out infinite;
+}
+.orbit-paused .animate-orbit,
+.orbit-paused .animate-orbit-reverse {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-orbit,
+  .animate-orbit-reverse,
+  .animate-float {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- legal pages
+   Figma 312:719: H1 → 14 → intro; 32 → divider → 48; sections 50 apart;
+   H2 → 18 → lead line → 6 → list (bullets: 4px #004930 dot, text indented 24). */
+.legal-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.legal-head .legal-p {
+  font-family: var(--font-manrope);
+  font-weight: 400;
+  color: #878787;
+}
+.legal-meta {
+  font-family: var(--font-dm);
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: #4a4a4a;
+}
+.legal-meta span {
+  color: #031814;
+}
+.legal-divider {
+  margin: 32px 0 48px;
+}
+.legal-p {
+  font-family: var(--font-dm);
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 500;
+  color: #4a4a4a;
+}
+.legal-list {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-dm);
+  font-size: 16px;
+  line-height: 1.3;
+  color: #737373;
+}
+.legal-list > li {
+  position: relative;
+  padding-left: 24px;
+}
+.legal-list > li::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: calc(0.65em - 2px);
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: #004930;
+}
+.legal-section > * + *,
+.legal-sub > * + * {
+  margin-top: 6px;
+}
+.legal-section > h2 + * {
+  margin-top: 18px;
+}
+.legal-section > .legal-sub + .legal-sub,
+.legal-section > .legal-sub + *,
+.legal-section > * + .legal-sub {
+  margin-top: 22px;
+}
+.legal-sub > h3 + * {
+  margin-top: 10px;
+}
+/* Figma shows one divider (under the title); dividers between sections are hidden. */
+.legal-section + .legal-divider {
+  display: none;
+}
+.legal-section + .legal-section,
+.legal-section + .legal-divider + .legal-section {
+  margin-top: 50px;
+}
+.legal-content a {
+  color: #004930;
+}
+@media (max-width: 1023px) {
+  .legal-divider {
+    margin: 24px 0 32px;
+  }
+  .legal-section + .legal-section,
+  .legal-section + .legal-divider + .legal-section {
+    margin-top: 36px;
+  }
+}
+
+/* ------------------------------------------------- automation flow pulse
+   A bright pulse slides through the dashed wire (the wire SVG is used as a mask),
+   so the dashes light up one after another: trigger → message, then message → end.
+   Both wires share one 3.2s cycle so the pulse hands off from the first to the second. */
+.flow-pulse {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask-image: var(--wire);
+  -webkit-mask-image: var(--wire);
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  background-image: linear-gradient(90deg, rgba(4,120,87,0) 0%, #059669 30%, #04583f 50%, #059669 70%, rgba(4,120,87,0) 100%);
+  background-repeat: no-repeat;
+  background-size: 38% 100%;
+  background-position: -60% 0;
+  animation: var(--flow-name) 3.2s linear infinite;
+  animation-delay: 1.6s;
+}
+.flow-pulse-a {
+  --flow-name: flow-a;
+}
+.flow-pulse-b {
+  --flow-name: flow-b;
+}
+/* wire 1 is drawn message (x=0) → trigger (x=100%), so the pulse runs right → left */
+@keyframes flow-a {
+  0% {
+    background-position: 160% 0;
+  }
+  48%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+/* wire 2 is drawn end (x=0) → message (x=100%), so the pulse also runs right → left
+   (message → end), starting as the first pulse arrives */
+@keyframes flow-b {
+  0%,
+  44% {
+    background-position: 160% 0;
+  }
+  88%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+/* the resting wire is dimmed so the travelling comet reads clearly */
+.flow-wire-base {
+  opacity: 0.35;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-pulse {
+    animation: none;
+    opacity: 0;
+  }
+  .flow-wire-base {
+    opacity: 1;
+  }
+}
+
+/* Industries card icon: a small hop + tilt when its card is hovered */
+@keyframes ind-icon-hop {
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+  35% {
+    transform: translateY(-4px) rotate(-10deg);
+  }
+  65% {
+    transform: translateY(0) rotate(6deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+}
+.group\/ind:hover .ind-icon {
+  animation: ind-icon-hop 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .group\/ind:hover .ind-icon {
+    animation: none;
+  }
+}
