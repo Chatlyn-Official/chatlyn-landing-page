@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, useState, type ComponentProps, type ReactNode } from "react";
-import { AnimatePresence, motion, useAnimationFrame, useInView, useMotionValue, useTransform } from "motion/react";
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
+import { AnimatePresence, motion, useAnimationFrame, useInView, useMotionValue, useReducedMotion } from "motion/react";
 import { EASE, Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 import { SectionHeading } from "./shared";
 
-const STEP_MS = 4500;
+const STEP_MS = 8000;
 
 const STEPS: { title: string; body: ReactNode; width?: number }[] = [
   {
@@ -295,19 +295,30 @@ const ILLUSTRATIONS = [ConnectIllustration, TeamIllustration, AutomateIllustrati
 
 export function HowItWorks() {
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [manual, setManual] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
+  const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inView = useInView(ref, { amount: 0.5 });
-  const running = inView && !paused && !manual;
-  const showFull = manual || (paused && active === 0);
+  const running = inView && !hasInteracted && !prefersReducedMotion;
 
-  // One progress value (0 → 1) drives the bar every frame. Pausing (hover / scrolled away)
-  // simply stops adding to it, so the bar freezes in place and resumes from the same spot
-  // with no restarts and no jumps. Manual selection (or hovering on step 1) fills the bar
-  // completely until hover ends.
+  // One progress value (0 → 1) drives scaleY every frame during autoplay.
+  // Leaving the viewport resets progress so the current step restarts cleanly on return;
+  // clicking any step locks autoplay off and fills the active bar to 100%.
   const progress = useMotionValue(0);
-  const barHeight = useTransform(progress, (v) => `${v * 100}%`);
+
+  useEffect(() => {
+    if (!inView && !hasInteracted) {
+      progress.set(0);
+    }
+  }, [inView, hasInteracted, progress]);
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
 
   useAnimationFrame((_, delta) => {
     if (!running) return;
@@ -322,12 +333,24 @@ export function HowItWorks() {
   });
 
   const goTo = (i: number) => {
-    setManual(true);
-    progress.set(0);
+    setHasInteracted(true);
+    progress.set(1);
     setActive(i);
+
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    if (window.matchMedia("(max-width: 1023px)").matches) {
+      scrollTimerRef.current = setTimeout(() => {
+        const el = stepRefs.current[i];
+        if (!el) return;
+        const headerOffset = window.matchMedia("(max-width: 600px)").matches ? 76 : 96;
+        const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }, 500);
+    }
   };
 
   const Illustration = ILLUSTRATIONS[active];
+  const showFull = hasInteracted || !!prefersReducedMotion;
 
   return (
     <section id="how-it-works" className="relative py-16 lg:pt-20 lg:pb-20">
@@ -343,14 +366,6 @@ export function HowItWorks() {
         <Reveal
           ref={ref}
           delay={0.1}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => {
-            setPaused(false);
-            if (manual) {
-              setManual(false);
-              progress.set(0);
-            }
-          }}
           className="mx-auto mt-12 flex w-full max-w-[615px] flex-col items-center gap-10 sm:min-h-[230px] sm:flex-row sm:justify-between sm:gap-6 lg:mt-[100px]"
         >
           <div className="flex h-[230px] w-[270px] shrink-0 items-center justify-center sm:justify-start">
@@ -371,7 +386,12 @@ export function HowItWorks() {
             {STEPS.map((s, i) => {
               const isActive = i === active;
               return (
-                <li key={s.title}>
+                <li
+                  key={s.title}
+                  ref={(el) => {
+                    stepRefs.current[i] = el;
+                  }}
+                >
                   <button
                     type="button"
                     onClick={() => goTo(i)}
@@ -380,10 +400,14 @@ export function HowItWorks() {
                   >
                     <span className="relative w-1 shrink-0 overflow-hidden rounded-full bg-[#d9d9d9]">
                       {isActive ? (
-                        <motion.span
-                          className={cn("absolute inset-x-0 top-0 rounded-full bg-forest", showFull && "!h-full")}
-                          style={{ height: barHeight }}
-                        />
+                        showFull ? (
+                          <span className="absolute inset-0 rounded-full bg-forest" />
+                        ) : (
+                          <motion.span
+                            className="absolute inset-0 origin-top rounded-full bg-forest"
+                            style={{ scaleY: progress }}
+                          />
+                        )
                       ) : null}
                     </span>
                     <span className={cn("flex min-h-9 flex-col justify-center gap-2 transition-[min-height] duration-300", isActive && "min-h-[86px]")}>
