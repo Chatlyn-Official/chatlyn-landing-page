@@ -19,16 +19,16 @@ const STEPS: { title: string; body: ReactNode; width?: number }[] = [
   },
   {
     title: "Invite Your Team.",
-    body: <>Add unlimited agents to your Shared Inbox with custom roles.</>,
+    body: <>Add unlimited agents to your <span className="font-medium text-ink">Shared Inbox</span> with custom roles.</>,
   },
   {
     title: "Build & Automate.",
-    body: <>Set up AI Copilot and drag-and-drop flows for 24/7 support.</>,
+    body: <>Set up <span className="font-medium text-ink">AI Copilot</span> and drag-and-drop flows for 24/7 support.</>,
   },
   {
     title: "Launch Campaigns.",
     width: 240,
-    body: <>Send broadcasts to targeted segments and watch your ROI grow.</>,
+    body: <>Send <span className="font-medium text-ink">broadcasts</span> to targeted segments and watch your ROI grow.</>,
   },
 ];
 

@@ -307,68 +307,6 @@ html.lenis body {
   }
 }
 
-/* ------------------------------------------------- automation flow pulse
-   A bright pulse slides through the dashed wire (the wire SVG is used as a mask),
-   so the dashes light up one after another: trigger → message, then message → end.
-   Both wires share one 3.2s cycle so the pulse hands off from the first to the second. */
-.flow-pulse {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  mask-image: var(--wire);
-  -webkit-mask-image: var(--wire);
-  mask-size: 100% 100%;
-  -webkit-mask-size: 100% 100%;
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  background-image: linear-gradient(90deg, rgba(4,120,87,0) 0%, #059669 30%, #04583f 50%, #059669 70%, rgba(4,120,87,0) 100%);
-  background-repeat: no-repeat;
-  background-size: 38% 100%;
-  background-position: -60% 0;
-  animation: var(--flow-name) 3.2s linear infinite;
-  animation-delay: 1.6s;
-}
-.flow-pulse-a {
-  --flow-name: flow-a;
-}
-.flow-pulse-b {
-  --flow-name: flow-b;
-}
-/* wire 1 is drawn message (x=0) → trigger (x=100%), so the pulse runs right → left */
-@keyframes flow-a {
-  0% {
-    background-position: 160% 0;
-  }
-  48%,
-  100% {
-    background-position: -60% 0;
-  }
-}
-/* wire 2 is drawn end (x=0) → message (x=100%), so the pulse also runs right → left
-   (message → end), starting as the first pulse arrives */
-@keyframes flow-b {
-  0%,
-  44% {
-    background-position: 160% 0;
-  }
-  88%,
-  100% {
-    background-position: -60% 0;
-  }
-}
-/* the resting wire is dimmed so the travelling comet reads clearly */
-.flow-wire-base {
-  opacity: 0.35;
-}
-@media (prefers-reduced-motion: reduce) {
-  .flow-pulse {
-    animation: none;
-    opacity: 0;
-  }
-  .flow-wire-base {
-    opacity: 1;
-  }
-}
 
 /* Industries card icon: a small hop + tilt when its card is hovered */
 @keyframes ind-icon-hop {

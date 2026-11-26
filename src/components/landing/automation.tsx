@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { motion, type Variants } from "motion/react";
 import { EASE, Reveal, Stagger, staggerChild } from "@/components/motion/reveal";
 import { ScaleToFit } from "@/components/motion/scale-to-fit";
@@ -15,9 +14,52 @@ const node: Variants = {
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: EASE } },
 };
 const wire: Variants = {
-  hidden: { clipPath: "inset(0 100% 0 0)" },
-  show: { clipPath: "inset(0 0% 0 0)", transition: { duration: 0.7, ease: "easeInOut" } },
+  hidden: { clipPath: "inset(100% 0 0 0)" },
+  show: { clipPath: "inset(0% 0 0 0)", transition: { duration: 0.7, ease: "easeInOut" } },
 };
+
+/** Animated dashed connector marching from source handle to target handle. */
+function FlowWire({
+  left,
+  top,
+  width,
+  height,
+  d,
+}: {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  d: string;
+}) {
+  const pad = 4;
+  return (
+    <motion.div
+      variants={wire}
+      aria-hidden
+      className="pointer-events-none absolute"
+      style={{ left: left - pad, top: top - pad, width: width + pad * 2, height: height + pad * 2 }}
+    >
+      <svg
+        viewBox={`${left - pad} ${top - pad} ${width + pad * 2} ${height + pad * 2}`}
+        fill="none"
+        className="block size-full overflow-visible"
+      >
+        <motion.path
+          d={d}
+          stroke="#10B981"
+          strokeWidth={2.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray="3.5 6.5"
+          initial={{ strokeDashoffset: 0 }}
+          animate={{ strokeDashoffset: -10 }}
+          transition={{ duration: 0.55, repeat: Infinity, ease: "linear" }}
+        />
+      </svg>
+    </motion.div>
+  );
+}
 
 /** Illustration box = Figma bounds x 623→1340, y 129→528 (717 × 399). */
 function FlowIllustration() {
@@ -26,7 +68,7 @@ function FlowIllustration() {
       variants={flow}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, amount: 0.35 }}
+      viewport={{ once: true, amount: 0.2 }}
       className="relative h-[399px] w-[717px]"
     >
       {/* Trigger node + "Universal Trigger" pill */}
@@ -42,28 +84,22 @@ function FlowIllustration() {
       </motion.div>
 
       {/* Wire: trigger → message */}
-      <div className="absolute top-[19.65px] left-[207.27px] flex h-[246.238px] w-[54.19px] items-center justify-center">
-        <div className="flex-none rotate-[89.77deg] skew-x-[0.37deg]">
-          <motion.div variants={wire} className="relative h-[53.228px] w-[245.683px]" style={{ transform: "scaleX(-1)" }}>
-            <div className="absolute inset-[-2.35%_-0.47%_-2.35%_-0.45%]" style={{ transform: "scaleX(-1)" }}>
-              <img src="/images/flow-line-1.svg" alt="" className="flow-wire-base block size-full max-w-none" />
-              <span aria-hidden className="flow-pulse flow-pulse-a" style={{ "--wire": "url(/images/flow-line-1.svg)" } as CSSProperties} />
-            </div>
-          </motion.div>
-        </div>
-      </div>
+      <FlowWire
+        left={207}
+        top={20}
+        width={57}
+        height={245}
+        d="M 207 265 H 225 A 10 10 0 0 0 235 255 V 30 A 10 10 0 0 1 245 20 H 264"
+      />
 
       {/* Wire: message → end */}
-      <div className="absolute top-[208.44px] left-[463.29px] flex h-[172.798px] w-[55.888px] items-center justify-center">
-        <div className="flex-none rotate-[89.77deg] skew-x-[0.37deg]">
-          <motion.div variants={wire} className="relative h-[55.214px] w-[172.222px]">
-            <div className="absolute inset-[-2.26%_-0.68%_-2.26%_-0.67%]">
-              <img src="/images/flow-line-2.svg" alt="" className="flow-wire-base block size-full max-w-none" />
-              <span aria-hidden className="flow-pulse flow-pulse-b" style={{ "--wire": "url(/images/flow-line-2.svg)" } as CSSProperties} />
-            </div>
-          </motion.div>
-        </div>
-      </div>
+      <FlowWire
+        left={461}
+        top={208}
+        width={61}
+        height={173}
+        d="M 461 380.5 H 481 A 10 10 0 0 0 491 370.5 V 218.5 A 10 10 0 0 1 501 208.5 H 522"
+      />
 
       {/* Message node */}
       <motion.div variants={node} className="absolute top-0 left-[262px] h-[399px] w-[200px]">
