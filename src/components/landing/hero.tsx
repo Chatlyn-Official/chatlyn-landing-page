@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion, useScroll, useSpring, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import { EASE } from "@/components/motion/reveal";
 import { PillLink } from "./shared";
 
@@ -13,15 +13,6 @@ const TITLE: { text: string; className: string; br?: boolean }[] = [
 ];
 
 export function Hero() {
-  const shotRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: shotRef,
-    offset: ["start end", "center center"],
-  });
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.4 });
-  const rotateX = useTransform(progress, [0, 1], [18, 0]);
-  const scale = useTransform(progress, [0, 1], [0.92, 1]);
-
   return (
     <section id="home" className="relative overflow-x-clip pt-[112px] pb-12 sm:pt-[150px] lg:pt-[190px] lg:pb-[62px]">
       {/* Background grid (Figma "Group 5"), anchored to the 1440 frame */}
@@ -93,13 +84,12 @@ export function Hero() {
           </PillLink>
         </motion.div>
 
-        {/* Product shot — tilts flat as it scrolls into view */}
-        <div ref={shotRef} className="mt-10 w-full max-w-[938px] [perspective:1600px] lg:mt-[72px]">
+        {/* Product shot */}
+        <div className="mt-12 w-full max-w-[938px] lg:mt-[108px]">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: EASE, delay: 0.9 }}
-            style={{ rotateX, scale, transformOrigin: "50% 100%" }}
             className="relative aspect-[938/457] w-full overflow-clip rounded-[10px] border border-ink bg-ink shadow-[4px_4px_30px_0px_rgba(3,24,20,0.5),-4px_-4px_30px_0px_rgba(0,73,48,0.5)] sm:rounded-[17.034px] sm:border-2"
           >
             <HeroVideo />
