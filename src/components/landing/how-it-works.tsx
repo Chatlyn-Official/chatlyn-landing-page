@@ -296,13 +296,16 @@ const ILLUSTRATIONS = [ConnectIllustration, TeamIllustration, AutomateIllustrati
 export function HowItWorks() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [manual, setManual] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { amount: 0.5 });
-  const running = inView && !paused;
+  const running = inView && !paused && !manual;
+  const showFull = manual || (paused && active === 0);
 
   // One progress value (0 → 1) drives the bar every frame. Pausing (hover / scrolled away)
   // simply stops adding to it, so the bar freezes in place and resumes from the same spot
-  // with no restarts and no jumps.
+  // with no restarts and no jumps. Manual selection (or hovering on step 1) fills the bar
+  // completely until hover ends.
   const progress = useMotionValue(0);
   const barHeight = useTransform(progress, (v) => `${v * 100}%`);
 
@@ -319,6 +322,7 @@ export function HowItWorks() {
   });
 
   const goTo = (i: number) => {
+    setManual(true);
     progress.set(0);
     setActive(i);
   };
@@ -340,7 +344,13 @@ export function HowItWorks() {
           ref={ref}
           delay={0.1}
           onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
+          onMouseLeave={() => {
+            setPaused(false);
+            if (manual) {
+              setManual(false);
+              progress.set(0);
+            }
+          }}
           className="mx-auto mt-12 flex w-full max-w-[615px] flex-col items-center gap-10 sm:min-h-[230px] sm:flex-row sm:justify-between sm:gap-6 lg:mt-[100px]"
         >
           <div className="flex h-[230px] w-[270px] shrink-0 items-center justify-center sm:justify-start">
@@ -371,7 +381,7 @@ export function HowItWorks() {
                     <span className="relative w-1 shrink-0 overflow-hidden rounded-full bg-[#d9d9d9]">
                       {isActive ? (
                         <motion.span
-                          className="absolute inset-x-0 top-0 rounded-full bg-forest"
+                          className={cn("absolute inset-x-0 top-0 rounded-full bg-forest", showFull && "!h-full")}
                           style={{ height: barHeight }}
                         />
                       ) : null}
