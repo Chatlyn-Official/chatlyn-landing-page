@@ -1,0 +1,59 @@
+name: Deploy Chatlyn Landing (chatlyn.in)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+# One deploy at a time: overlapping runs share one folder on the server and break each other's build.
+concurrency:
+  group: deploy-landing
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Check the build in CI first, so a broken commit never reaches the server.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck and lint
+        run: |
+          npx tsc --noEmit -p .
+          npx eslint src
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        timeout-minutes: 10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e  # a failed step stops here instead of restarting a broken site
+            cd /home/Chatlyn/chatlyn-landing-page
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            npm ci
+            rm -rf .next
+            npm run build
+
+            # Listens on 127.0.0.1:3005 only; nginx forwards chatlyn.in to it.
+            pm2 restart chatlyn-landing --update-env || pm2 start npm --name chatlyn-landing -- start -- -p 3005 -H 127.0.0.1
+            pm2 save

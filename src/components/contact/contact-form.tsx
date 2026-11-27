@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/components/motion/reveal";
+import { submitContact } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type Values = { name: string; email: string; company: string; inquiry: string; message: string };
@@ -13,8 +14,11 @@ const INQUIRY_TYPES = ["Sales", "Support", "Demo", "Partnership", "Billing"];
 
 function validate(v: Values): Errors {
   const e: Errors = {};
+  // Limits match the backend (ContactSubmissionCreate): name 2-100, company/inquiry 1-100, message up to 2000.
   if (v.name.trim().length < 2) e.name = "Please enter your full name.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.email.trim())) e.email = "Please enter a valid email address.";
+  if (!v.company.trim()) e.company = "Please enter your company name.";
+  if (!v.inquiry.trim()) e.inquiry = "Please choose or type an inquiry type.";
   if (v.message.trim().length < 10) e.message = "Please write a short message (at least 10 characters).";
   return e;
 }
@@ -64,10 +68,13 @@ export function ContactForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [failure, setFailure] = useState("");
+  const inFlight = useRef(false); // blocks a second submit before React re-renders the disabled button
 
   const set = (key: keyof Values) => (e: { target: { value: string } }) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
     if (errors[key]) setErrors((er) => ({ ...er, [key]: undefined }));
+    if (failure) setFailure("");
   };
 
   const errorProps = (key: keyof Values) => ({
@@ -79,12 +86,21 @@ export function ContactForm() {
     e.preventDefault();
     const found = validate(values);
     setErrors(found);
-    if (Object.keys(found).length) return;
-    // No backend yet — just acknowledge the message.
+    if (Object.keys(found).length || inFlight.current) return;
+    inFlight.current = true;
     setSending(true);
-    await new Promise((r) => setTimeout(r, 700));
+    setFailure("");
+    const result = await submitContact({
+      name: values.name.trim(),
+      email: values.email.trim().toLowerCase(),
+      company: values.company.trim(),
+      inquiry: values.inquiry.trim(),
+      message: values.message.trim(),
+    });
+    inFlight.current = false;
     setSending(false);
-    setSent(true);
+    if (result.ok) setSent(true);
+    else setFailure(result.message);
   }
 
   return (
@@ -146,18 +162,18 @@ export function ContactForm() {
             <div className="flex w-full flex-col gap-[26px]">
               <div className="flex w-full flex-col gap-[26px] sm:flex-row sm:items-start sm:gap-6">
                 <Field id="name" label="Full Name" error={errors.name}>
-                  <input id="name" name="name" autoComplete="name" placeholder="Enter your full name" value={values.name} onChange={set("name")} className={cn(fieldClass, errors.name && "border-[#e08a80]")} {...errorProps("name")} />
+                  <input id="name" maxLength={100} name="name" autoComplete="name" placeholder="Enter your full name" value={values.name} onChange={set("name")} className={cn(fieldClass, errors.name && "border-[#e08a80]")} {...errorProps("name")} />
                 </Field>
                 <Field id="email" label="Company Email" error={errors.email}>
-                  <input id="email" name="email" type="email" autoComplete="email" placeholder="company@gmail.com" value={values.email} onChange={set("email")} className={cn(fieldClass, errors.email && "border-[#e08a80]")} {...errorProps("email")} />
+                  <input id="email" name="email" maxLength={254} type="email" autoComplete="email" placeholder="company@gmail.com" value={values.email} onChange={set("email")} className={cn(fieldClass, errors.email && "border-[#e08a80]")} {...errorProps("email")} />
                 </Field>
               </div>
               <div className="flex w-full flex-col gap-[26px] sm:flex-row sm:items-start sm:gap-6">
-                <Field id="company" label="Company Name">
-                  <input id="company" name="company" autoComplete="organization" placeholder="Enter company name" value={values.company} onChange={set("company")} className={fieldClass} />
+                <Field id="company" label="Company Name" error={errors.company}>
+                  <input id="company" name="company" maxLength={100} autoComplete="organization" placeholder="Enter company name" value={values.company} onChange={set("company")} className={cn(fieldClass, errors.company && "border-[#e08a80]")} {...errorProps("company")} />
                 </Field>
-                <Field id="inquiry" label="Inquiry Type">
-                  <input id="inquiry" name="inquiry" list="inquiry-types" placeholder="Sales, Support, Demo..." value={values.inquiry} onChange={set("inquiry")} className={fieldClass} />
+                <Field id="inquiry" label="Inquiry Type" error={errors.inquiry}>
+                  <input id="inquiry" name="inquiry" maxLength={100} list="inquiry-types" placeholder="Sales, Support, Demo..." value={values.inquiry} onChange={set("inquiry")} className={cn(fieldClass, errors.inquiry && "border-[#e08a80]")} {...errorProps("inquiry")} />
                   <datalist id="inquiry-types">
                     {INQUIRY_TYPES.map((t) => (
                       <option key={t} value={t} />
@@ -166,9 +182,23 @@ export function ContactForm() {
                 </Field>
               </div>
               <Field id="message" label="Message" error={errors.message}>
-                <textarea id="message" name="message" placeholder="Write your message here..." value={values.message} onChange={set("message")} rows={5} className={cn(fieldClass, "h-[136px] resize-none", errors.message && "border-[#e08a80]")} {...errorProps("message")} />
+                <textarea id="message" name="message" placeholder="Write your message here..." value={values.message} onChange={set("message")} rows={5} maxLength={2000} className={cn(fieldClass, "h-[136px] resize-none", errors.message && "border-[#e08a80]")} {...errorProps("message")} />
               </Field>
             </div>
+
+            <AnimatePresence initial={false}>
+              {failure ? (
+                <motion.p
+                  role="alert"
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="-mb-4 w-full rounded-[8px] border border-[#f1c4bd] bg-[#fdf1ef] px-4 py-3 text-center font-dm text-sm leading-[1.3] text-[#a5281b]"
+                >
+                  {failure}
+                </motion.p>
+              ) : null}
+            </AnimatePresence>
 
             <motion.button
               type="submit"

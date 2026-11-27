@@ -32,7 +32,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: "Industries", href: "/#industries" },
       { label: "Integrations", href: "/#integrations" },
       { label: "Pricing", href: "/#pricing" },
-      { label: "Resources", href: "/#faqs" },
+      { label: "Docs", href: "/docs" },
     ],
   },
   {
@@ -40,7 +40,6 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     links: [
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms & Condition", href: "/terms-and-conditions" },
-      { label: "Security", href: "/privacy-policy" },
       { label: "Cancellation Policy", href: "/cancellation-policy" },
     ],
   },

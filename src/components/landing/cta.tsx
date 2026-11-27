@@ -1,9 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { Reveal } from "@/components/motion/reveal";
 import { Eyebrow, PillLink } from "./shared";
+import { LOGIN_URL } from "@/lib/api";
 
 /** Decorative rings in the CTA banner (Ellipse 18–21), each slowly drifting. */
 const ARCS = [
@@ -14,7 +14,6 @@ const ARCS = [
 ];
 
 export function Cta() {
-  const onHome = usePathname() === "/";
   return (
     <section className="relative py-12 lg:py-20">
       <div className="mx-auto w-full max-w-[1239px] px-5">
@@ -56,7 +55,7 @@ export function Cta() {
               Start building smarter WhatsApp experiences with Chatlyn.
             </p>
             <div className="relative mt-8 flex flex-wrap items-center justify-center gap-3.5 lg:absolute lg:top-[323px] lg:left-[calc(50%+0.5px)] lg:mt-0 lg:-translate-x-1/2 lg:flex-nowrap">
-              <PillLink href={onHome ? "#pricing" : "/#pricing"} variant="cream">
+              <PillLink href={LOGIN_URL} variant="cream">
                 Get Started
               </PillLink>
               <PillLink href="/contact" variant="cream">

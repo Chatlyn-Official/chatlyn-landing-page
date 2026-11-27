@@ -4,6 +4,7 @@ import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { Cta } from "@/components/landing/cta";
 import { Footer } from "@/components/landing/footer";
 import { Header } from "@/components/landing/header";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -24,6 +25,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Chatlyn | WhatsApp, Supercharged for Business",
   description:
     "Automate conversations, empower your team, and turn WhatsApp interactions into meaningful business growth.",

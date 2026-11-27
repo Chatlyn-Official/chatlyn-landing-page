@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { EASE, Reveal, Stagger, staggerChild } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 import { PillLink, SectionHeading } from "./shared";
+import { LOGIN_URL } from "@/lib/api";
 
 const TERMS = [
   { id: "monthly", label: "Monthly", discount: 0 },
@@ -214,7 +215,7 @@ function PlanCard({ plan, term }: { plan: Plan; term: TermId }) {
             ))}
           </ul>
         </div>
-        <PillLink href="/contact" variant={featured ? "gold" : "muted"} size="block">
+        <PillLink href={plan.cta === "Get Started" ? LOGIN_URL : "/contact"} variant={featured ? "gold" : "muted"} size="block">
           {plan.cta}
         </PillLink>
       </div>

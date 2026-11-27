@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { EASE } from "@/components/motion/reveal";
+import { LOGIN_URL } from "@/lib/api";
 import { PillLink } from "./shared";
 
 const TITLE: { text: string; className: string; br?: boolean }[] = [
@@ -76,7 +77,7 @@ export function Hero() {
           transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
           className="mt-8 flex flex-wrap items-start justify-center gap-2.5 lg:mt-[46px]"
         >
-          <PillLink href="#pricing" size="lg">
+          <PillLink href={LOGIN_URL} size="lg">
             Get Started
           </PillLink>
           <PillLink href="/contact" variant="outline" size="lg">

@@ -8,6 +8,7 @@ import { MenuIcon } from "lucide-react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
+import { LOGIN_URL } from "@/lib/api";
 import { PillLink } from "./shared";
 
 /** `section` items scroll to a block on the home page; `page` items are their own routes. */
@@ -17,7 +18,7 @@ const NAV: { label: string; section?: string; page?: string }[] = [
   { label: "How it work", section: "how-it-works" },
   { label: "Pricing", section: "pricing" },
   { label: "FAQs", section: "faqs" },
-  { label: "Blog", section: "blog" },
+  { label: "Docs", page: "/docs" },
   { label: "Contact", page: "/contact" },
 ];
 
@@ -47,7 +48,7 @@ function useActiveItem(pathname: string) {
     return () => io.disconnect();
   }, [onHome]);
   return (item: (typeof NAV)[number]) =>
-    item.page ? pathname === item.page : onHome && item.section === section;
+    item.page ? pathname === item.page || pathname.startsWith(`${item.page}/`) : onHome && item.section === section;
 }
 
 export function Header() {
@@ -98,7 +99,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <PillLink href={onHome ? "#pricing" : "/#pricing"} className="hidden sm:inline-flex">
+          <PillLink href={LOGIN_URL} className="hidden sm:inline-flex">
             Get Started
           </PillLink>
 
@@ -134,7 +135,7 @@ export function Header() {
                   </SheetClose>
                 ))}
               </nav>
-              <PillLink href={onHome ? "#pricing" : "/#pricing"} size="lg" className="mt-auto w-full" onClick={() => setOpen(false)}>
+              <PillLink href={LOGIN_URL} size="lg" className="mt-auto w-full" onClick={() => setOpen(false)}>
                 Get Started
               </PillLink>
             </SheetContent>
