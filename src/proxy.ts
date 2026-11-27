@@ -10,7 +10,13 @@ const DOC_SLUGS = new Set(DOC_PAGES.map((page) => page.slug));
 export function proxy(request: NextRequest) {
   const slug = request.nextUrl.pathname.slice("/docs/".length).replace(/\/+$/, "");
   if (!DOC_SLUGS.has(slug)) {
-    return NextResponse.rewrite(new URL("/docs-not-found", request.url), { status: 404 });
+    // Behind nginx, X-Forwarded-Proto makes request URLs read "https://localhost:<port>", but the
+    // app itself speaks plain http. Next treats a rewrite to that https origin as an external
+    // proxy and fails (500), so point the internal rewrite back at http.
+    const url = request.nextUrl.clone();
+    url.protocol = "http:";
+    url.pathname = "/docs-not-found";
+    return NextResponse.rewrite(url, { status: 404 });
   }
   return NextResponse.next();
 }
