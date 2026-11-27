@@ -30,6 +30,7 @@ jobs:
 
       - name: Typecheck and lint
         run: |
+          npx next typegen   # creates PageProps/LayoutProps types; a fresh checkout has no .next yet
           npx tsc --noEmit -p .
           npx eslint src
 
